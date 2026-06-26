@@ -1,0 +1,79 @@
+{
+    "p001": {
+        "name": "Ali Khan",
+        "age": 28,
+        "gender": "Male",
+        "phone": "+92-300-1112233",
+        "address": "Karachi, Pakistan",
+        "disease": "Fever",
+        "doctor": "Dr. Ahmed",
+        "admit_date": "2026-05-20",
+        "status": "Admitted"
+    },
+    "p002": {
+        "name": "Sara Ahmed",
+        "age": 35,
+        "gender": "Female",
+        "phone": "+92-301-2223344",
+        "address": "Hyderabad, Pakistan",
+        "disease": "Diabetes",
+        "doctor": "Dr. Bilal",
+        "admit_date": "2026-05-18",
+        "status": "Under Treatment"
+    },
+    "p003": {
+        "name": "Usman Tariq",
+        "age": 42,
+        "gender": "Male",
+        "phone": "+92-302-3334455",
+        "address": "Lahore, Pakistan",
+        "disease": "Blood Pressure",
+        "doctor": "Dr. Bilal",
+        "admit_date": "2026-05-15",
+        "status": "Discharged"
+    },
+    "p004": {
+        "name": "Ayesha Malik",
+        "age": 22,
+        "gender": "Female",
+        "phone": "+92-303-4445566",
+        "address": "Islamabad, Pakistan",
+        "disease": "Asthma",
+        "doctor": "Dr. Kamran",
+        "admit_date": "2026-05-21",
+        "status": "Admitted"
+    },
+    "p005": {
+        "name": "Amir",
+        "age": 22,
+        "gender": "Male",
+        "phone": "+92-304-5556677",
+        "address": "Faisalabad, Pakistan",
+        "disease": "Typhoid",
+        "doctor": "Dr. Nadia",
+        "admit_date": "2026-05-19",
+        "status": "Under Treatment"
+    },
+    "p006": {
+        "name": "Ahmed Khan",
+        "age": 32,
+        "gender": "male",
+        "phone": "+92-300-1234567",
+        "address": "Karachi, Pakistan",
+        "disease": "Dengue Fever",
+        "doctor": "Dr. Ali Hassan",
+        "admit_date": "2026-05-27",
+        "status": "Admitted"
+    },
+    "p007": {
+        "name": "Rosa",
+        "age": 29,
+        "gender": "female",
+        "phone": "+92-300-1234567",
+        "address": "Karachi, Pakistan",
+        "disease": "Fever",
+        "doctor": "Dr. Smith",
+        "admit_date": "2026-05-28",
+        "status": "admitted"
+    }
+}
