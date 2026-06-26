@@ -5,13 +5,14 @@ app = FastAPI(
     title="Patient Dashboard",
     description='This dashboard used to manage patient record',
     )
-# Load File
+
+# Load Json File 
 def loadJson():
     with open('patients.json','r')as f:
         data = json.load(f)
     return data
 
-# Get Method
+# Used Get Method 
 @app.get('/')
 def home():
     return{'message':'Wellcome to Dashboad'}
