@@ -1,16 +1,57 @@
-from fastapi import FastAPI, Path, Query
+from fastapi import FastAPI, Path, Query, HTTPException
 import json
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel,Field 
+from typing import List, Dict, Optional, Annotated, Literal
+
+
+# Pydantic Model
+class Address(BaseModel):
+    city: Annotated[str, Field(title="City")]
+    country: Annotated[str, Field(title="Country")]
+
+class PatientAdd(BaseModel):
+    name : Annotated[str,Field(title='Name',)]
+    age : Annotated[int,Field(ge=0, le=120, title="Age")]
+    gender :  Annotated[Literal['Male','Female','Other'],Field(title='Gender')]
+    phone : Annotated[str,Field(min_length=11, max_length=11)]
+    address :Address
+    disease : Annotated[str,Field(title='Disease',)]
+    doctor: Annotated[str,Field(title='Doctor',)]
+    admit_date :Annotated[str,Field(title='Admit Date')]
+    status :  Annotated[Literal['Discharged','Admitted','Under Treatment'],Field(title='Gender')]
+
+
+def generate_id(data):
+    if not data:
+        return "p001"
+    
+    last_id = sorted(data.keys())[-1]
+    num = int(last_id[1:]) + 1
+    return f"p{num:03d}"
+
+import json
+import os
+
+def loadJson():
+    if not os.path.exists("patients.json"):
+        return {}
+
+    try:
+        with open("patients.json", "r") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return {}
+
+# Save Json File
+def save_json(data):
+    with open('patients.json','w')as f:
+        json.dump(data,f)
 
 app = FastAPI(
     title="Patient Dashboard",
     description='This dashboard used to manage patient record',
     )
-
-# Load Json File 
-def loadJson():
-    with open('patients.json','r')as f:
-        data = json.load(f)
-    return data
 
 # Used Get Method 
 @app.get('/')
@@ -18,7 +59,7 @@ def home():
     return{'message':'Wellcome to Dashboad'}
 
 @app.get('/List Patient')
-def viewList():
+def view_List():
     return loadJson()
 
 # Path Parameter
@@ -54,3 +95,32 @@ def Sort_Patient(
 
     return result
  
+#  Post Method
+@app.post('/createpatient')
+def Create_patient(patient:PatientAdd):
+
+    data = loadJson()
+    
+    patient_id = generate_id(data)
+
+    for pid, record in data.items():
+        if (
+            record["name"] == patient.name and
+            record["disease"] == patient.disease and
+            record["phone"] == patient.phone
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail="Patient already exists"
+            )
+    
+    data[patient_id] = patient.model_dump()
+    try:
+        save_json(data)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save data: {str(e)}"
+        )
+
+    return JSONResponse(status_code= 200, content= patient.model_dump())
