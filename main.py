@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Path, Query, HTTPException
+from fastapi import FastAPI, Path, Query, HTTPException 
 import json
+import os
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel,Field 
 from typing import List, Dict, Optional, Annotated, Literal
@@ -10,16 +11,16 @@ class Address(BaseModel):
     city: Annotated[str, Field(title="City")]
     country: Annotated[str, Field(title="Country")]
 
-class PatientAdd(BaseModel):
-    name : Annotated[str,Field(title='Name',)]
-    age : Annotated[int,Field(ge=0, le=120, title="Age")]
-    gender :  Annotated[Literal['Male','Female','Other'],Field(title='Gender')]
-    phone : Annotated[str,Field(min_length=11, max_length=11)]
-    address :Address
-    disease : Annotated[str,Field(title='Disease',)]
-    doctor: Annotated[str,Field(title='Doctor',)]
-    admit_date :Annotated[str,Field(title='Admit Date')]
-    status :  Annotated[Literal['Discharged','Admitted','Under Treatment'],Field(title='Gender')]
+class Patient(BaseModel):
+    name : Optional[Annotated[str,Field(title='Name',)]]
+    age : Optional[Annotated[int,Field(ge=0, le=120, title="Age")]]
+    gender :  Optional[Annotated[Literal['Male','Female','Other'],Field(title='Gender')]]
+    phone : Optional[Annotated[str,Field(min_length=11, max_length=11)]]
+    address :Optional[Address]
+    disease : Optional[Annotated[str,Field(title='Disease',)]]
+    doctor: Optional[Annotated[str,Field(title='Doctor',)]]
+    admit_date :Optional[Annotated[str,Field(title='Admit Date')]]
+    status :  Optional[Annotated[Literal['Discharged','Admitted','Under Treatment'],Field(title='Gender')]]
 
 
 def generate_id(data):
@@ -29,9 +30,6 @@ def generate_id(data):
     last_id = sorted(data.keys())[-1]
     num = int(last_id[1:]) + 1
     return f"p{num:03d}"
-
-import json
-import os
 
 def loadJson():
     if not os.path.exists("patients.json"):
@@ -97,7 +95,7 @@ def Sort_Patient(
  
 #  Post Method
 @app.post('/createpatient')
-def Create_patient(patient:PatientAdd):
+def Create_patient(patient:Patient):
 
     data = loadJson()
     
@@ -124,3 +122,53 @@ def Create_patient(patient:PatientAdd):
         )
 
     return JSONResponse(status_code= 200, content= patient.model_dump())
+
+# put Method
+@app.put('/update')
+def Patient_Update(patient_id:str,  patient:Patient):
+    data = loadJson()
+
+    if patient_id not in  data:
+        raise HTTPException(status_code= 404, detail={'message':'Invalid id'})
+    
+    existing_data = data[patient_id]
+
+    updating_data = patient.model_dump(exclude_unset=True)
+
+    for key,value in updating_data.items():
+        existing_data[key] = value
+
+    
+    data[patient_id] = existing_data
+    try:
+        save_json(data)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to Update data: {str(e)}"
+        )
+
+    return JSONResponse(status_code= 200, content= patient.model_dump())
+
+# Delete Method
+@app.delete('/delete/{patient_id}')
+def Delete_patient(id:str):
+    data = loadJson()
+
+    if id not in data:
+        raise HTTPException(
+            status_code= 404,
+            detail={
+                'message':'Unauthorized User'
+            }
+        )
+    else:
+        delete_data = data[id]
+        del data[id]
+
+        save_json(data)
+
+        return{
+            'message':'delete Sucessfully',
+            'data': delete_data
+        }
